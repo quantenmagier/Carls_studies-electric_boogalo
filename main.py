@@ -4,6 +4,7 @@ import pygame
 
 from settings import Settings
 from ship import Ship
+from bullet import Bullet
 
 class AlienInvasion:
     """Overall class to manage game assets and behavior"""
@@ -21,7 +22,9 @@ class AlienInvasion:
             self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
 
         pygame.display.set_caption("Alien Invasion")
-
+        # Instantiate bullets
+        self.bullets = pygame.sprite.Group()
+        # Instantiate a ship
         self.ship = Ship(self)
 
 
@@ -30,6 +33,7 @@ class AlienInvasion:
         while True:
             self._check_events()
             self.ship.update()
+            self._update_bullets()
             self._update_screen()
             #  helper methods are only supposed to be called by another method to refactor the code properly
 
@@ -51,6 +55,8 @@ class AlienInvasion:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
 
     def _check_keyup_events(self, event):
         """A helper method to refactor key releases"""
@@ -59,10 +65,29 @@ class AlienInvasion:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
 
+    def _fire_bullet(self):
+        """Create a new bullet and add it to the bullets group"""
+        # we cereate a new bullet only if the maximum amount of bullets wasn't reached
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
+    def _update_bullets(self):
+        """Update the position of bullets and get rid of old ones"""
+        # update the bullet positions
+        self.bullets.update()
+        # Getting rid of the bullets that leave the screen by looping over a copy of the original group (list)
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+
+
     def _update_screen(self):
         """Redraw the screen for every pass through the loop"""
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
 
         # Make the most recently drawn screen visible.
         pygame.display.flip()
