@@ -88,6 +88,8 @@ class AlienInvasion:
         self.stats.reset_stats()
         self.stats.game_active = True
         self.sb.prep_score()
+        self.sb.prep_level()
+        self.sb.prep_ships()
 
         # Hide the mouse cursor
         pygame.mouse.set_visible(False)
@@ -157,6 +159,10 @@ class AlienInvasion:
             self._create_fleet()
             self.settings.increase_speed()
 
+            # Increase level
+            self.stats.level += 1
+            self.sb.prep_level()
+
     def _update_aliens(self):
         """Updates the alien positions in the fleet by checking if it hit an edge"""
         self._check_fleet_edges()
@@ -198,7 +204,7 @@ class AlienInvasion:
 
         # Determine the number of rows of aliens that fit on the screen.
         ship_height = self.ship.rect.height
-        available_space_y = self.settings.screen_height - 3 * alien_height - ship_height
+        available_space_y = self.settings.screen_height - 4 * alien_height - ship_height
         number_rows = available_space_y // (2 * alien_height)
 
         # Create a full fleet of aliens
@@ -212,7 +218,7 @@ class AlienInvasion:
         alien_width, alien_height = alien.rect.size
         alien.x = alien_width + 2 * alien_width * alien_number
         alien.rect.x = alien.x
-        alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
+        alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number + 50
         self.aliens.add(alien)
 
     def _check_fleet_edges(self):
@@ -235,8 +241,9 @@ class AlienInvasion:
 
         if self.stats.ships_left > 0:
 
-            # Decrement ships_left
+            # Decrement ships_left and update scoreboard
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             # Get rid of any remaining aliens and bullets
             self.aliens.empty()
