@@ -1,4 +1,6 @@
 import pygame
+
+
 class Settings:
     """A class to store all setting for alien invasion"""
 
@@ -23,7 +25,7 @@ class Settings:
         self.fullscreen_flag = False
 
         # How quickly the game speeds up
-        self.speedup_scale = 1.1
+        self.speedup_scale = 1.3
 
         # How quickly the alien points increase
         self.score_scale = 1.5
@@ -33,7 +35,7 @@ class Settings:
     def initialize_dynamic_settings(self):
         """Initialize settings that change throughout the game"""
         self.ship_speed = 1.5
-        self.bullet_speed = 2.0
+        self.bullet_speed = 1.5
         self.alien_speed = 1.0
 
         # fleet_direction of 1 represents right; -1 represents left
